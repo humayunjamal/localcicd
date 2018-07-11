@@ -1,0 +1,30 @@
+---
+
+- name: Creates job dir
+  file: path={{ jenkins_home }}/jobs/pipeline-job/ owner=jenkins group=jenkins state=directory 
+
+
+- name: Copy job config
+  template:
+    src: config.xml
+    dest: "{{ jenkins_home }}/jobs/pipeline-job/config.xml"
+    owner: "jenkins"
+    group: "jenkins"
+    mode: 0775
+  notify: restart jenkins
+
+
+- name: Ensure docker is installed.
+  package:
+    name:
+      - docker
+    state: present
+
+- name: start docker
+  service: name=docker state=restarted
+
+- name: adding existing user jenkins to group root
+  user:
+    name: 'jenkins'
+    groups: root
+    append: yes

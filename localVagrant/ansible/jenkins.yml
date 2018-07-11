@@ -1,0 +1,16 @@
+---
+- name: Deploy Jenkins CI
+  hosts: jenkins_server
+  remote_user: "{{ ansible_ssh_user | default('vagrant') }}"
+  become: yes
+
+  roles:
+    - ansible-role-repo-epel
+    - ansible-role-java
+    - ansible-role-jenkins
+    - ansible-role-git
+    - ansible-maven
+    - ansible-role-ansible
+
+
+    

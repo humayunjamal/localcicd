@@ -1,0 +1,51 @@
+#!/bin/env groovy
+
+pipeline {
+  agent none
+  stages {
+    stage('Test') {
+      agent any
+      steps {
+        script {
+            echo "TESTING : Probably mvn clean test"
+        }
+      }
+    }
+    stage('Build') {
+      agent any
+      steps {
+          sh '''
+          cd springapp
+          /opt/apache-maven-3.5.3/bin/mvn package
+          '''
+      }
+    }
+    stage('Deploy Code') {
+      agent any
+      steps {
+        script {
+            sh (returnStatus: true, script: "docker stop my-maven-project")
+            sh (returnStatus: true, script: "docker rm my-maven-project")
+            sh '''
+            cd springapp
+            docker build -t helloworld .
+            docker run -it -d -p 8081:8080 --name my-maven-project helloworld:latest
+            '''
+        }
+      }
+    }
+    stage('HealthCheck') {
+      agent any
+      steps {
+        script {
+            timeout(time: 5, unit: 'MINUTES') {
+            sh 'until $(curl --output /dev/null --silent --head --fail http://localhost:8081); do echo ".";sleep 5;done'
+            echo 'The app is now responding please check locally'
+             }
+        
+        }
+      }
+    }
+  }
+}
+
