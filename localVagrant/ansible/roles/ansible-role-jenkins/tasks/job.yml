@@ -19,9 +19,7 @@
     name:
       - docker
     state: present
-
-- name: start docker
-  service: name=docker state=restarted
+  notify: restart docker
 
 - name: adding existing user jenkins to group root
   user:

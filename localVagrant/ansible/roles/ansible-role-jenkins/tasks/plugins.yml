@@ -58,8 +58,13 @@
     with_dependencies: "{{ jenkins_plugins_install_dependencies }}"
   with_items: "{{ jenkins_plugins }}"
   when: jenkins_admin_password != ""
-  notify: restart jenkins
 
+- name: sleep for 180 seconds for plugin installations continue with play
+  wait_for: timeout=300
+
+- name: restart jenkins
+  service: name=jenkins state=restarted
+  
 - name: Install Jenkins plugins using token.
   jenkins_plugin:
     name: "{{ item }}"

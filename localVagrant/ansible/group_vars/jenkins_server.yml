@@ -1,7 +1,7 @@
 # https://github.com/geerlingguy/ansible-role-jenkins
 jenkins_package_state: latest
 jenkins_admin_username: admin
-jenkins_admin_password: admin123
+jenkins_admin_password: admin
 jenkins_plugins: [
   'git', 
   'github', 
@@ -9,7 +9,10 @@ jenkins_plugins: [
   'pipeline-utility-steps',
   'ws-cleanup',
   'pipeline',
-  'workflow-job'
+  'workflow-job',
+  'pipeline-model-definition-plugin',
+  'blueocean-plugin',
+  'workflow-aggregator'
   ]
 maven_major: 3
 maven_release: 3.5.3

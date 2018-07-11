@@ -24,12 +24,45 @@ Using docker to create a local Jenkins server with pipeline plugin.
 
 #### How to Run
 
-1. The spring application directory ```springapp/``` is already being used to mount as volume in ```localJenkins/docker-compose.yml```
-2. From the root directory of the repo run ```make docker```
+1. From the root directory of the repo run ```make docker```
+2. The spring application directory ```springapp/``` is already being used to mount as volume in ```localJenkins/docker-compose.yml```
 3. Once the Jenkins container is up , please access it via `http://localhost:18080` where localhost should point to the ip address where the container can be accessed. 
 4. Run the pipeline-updater job at `http://localhost:18080/job/pipeline-updater/`
 5. Your pipeline should have run at `http://localhost:18080/job/devPipeline/`
 6. Once the job is success , please check your application at `http://localhost:8080`
 7. For any updates in the code and if it needs rebuilding please rebuild `http://localhost:18080/job/pipeline-updater/`
+
+# Solution 2
+
+Using Vagrant to create a local Jenkins Server provisioned by Ansible
+
+#### Pre Requisite 
+
+* Vagrant should be installed and able to run locally
+
+#### How its setup
+
+* Vagrantfile creates a centos based box which is then provisioned by ansible playbook inside `localVagrant/ansible/jenkins.yml`
+* Ansible installs Jenkins with required plugins
+* Jenkins username password (admin/admin)
+* Ansible also create a pipeline workflow job configured as per config `(localVagrant/ansible/roles/ansible-role-jenkins/templates/config.xml)` that checks out the repo `https://github.com/humayunjamal/localcicd` ```master branch```
+* The job uses the ```springapp/Jenkinsfile_vagrant``` to create and run pipeline based flow.
+* Once the application code is tested , it is then deployed inside docker container which is running in the same vagrant box 
+
+#### How to Run
+
+1. From the root directory of the repo run ```make vagrant```
+2. Once the vagrant provisioning is completed access jenking at ```http://172.16.10.100:8080/``` (admin/admin)
+3. Run the job ```pipeline-job```
+4. Once the job is success , please check your application at `http://172.16.10.100:8081`
+5. For any updates in the code and if it needs rebuilding please check in to master branch of the repo and rebuild ```http://172.16.10.100:8080/job/pipeline-job/```
+
+
+#### To Do 
+
+* Make it more parameterized for more flexibility
+* Create box image to speed up the vagrant provisioning process
+* Add more options in Makefile
+
 
 
